@@ -92,8 +92,6 @@ class Game:
                     if self.dave.current_instrument == Instruments.TRUMPET:
                         self.trumpet.pause()
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP:
-                    self.dave.test_animation()
                 if event.key == pygame.K_ESCAPE:
                     self.running = False
                 if event.key == pygame.K_s:
@@ -108,6 +106,7 @@ class Game:
                 if event.key == pygame.K_LSHIFT:
                     self.dave.dash()
             elif event.type == pygame.KEYUP:
+                
                 if event.key == pygame.K_a:
                     self.movement[0] = False
                 if event.key == pygame.K_d:

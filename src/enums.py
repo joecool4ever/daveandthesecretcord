@@ -15,7 +15,7 @@ class ObjectStates(Enum):
 class Instruments(Enum):
     LYRE = "Lyre"
     MIC = "Mic"
-    BASS = "Bass"
     DRUMS = "Drums"
+    BASS = "Bass"
     VIOLIN = "Violin"
     TRUMPET = "Trumpet"

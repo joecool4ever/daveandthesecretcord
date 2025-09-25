@@ -3,14 +3,14 @@ import random
 from enums import ObjectStates, Instruments
 
 move_animation_rects = {
-    ObjectStates.IDLE : [[pygame.Rect(34*i, 0, 35, 35) for i in range(3)],8],
-    ObjectStates.RUNNING : [[pygame.Rect(34*i, 35, 35, 35) for i in range(6)], 8 ],
-    ObjectStates.IDLE_BLINK : [[pygame.Rect(34*3, 0, 35, 35)], 8],
-    ObjectStates.FALLING : [[pygame.Rect(34*5, 0, 35, 35)], 8],
-    ObjectStates.JUMPING : [[pygame.Rect(34*4, 0, 35, 35)], 8],
+    ObjectStates.IDLE : [[pygame.Rect(34*i, 0, 35, 35) for i in range(3)], 13],
+    ObjectStates.RUNNING : [[pygame.Rect(34*i, 35, 35, 35) for i in range(6)], 7],
+    ObjectStates.IDLE_BLINK : [[pygame.Rect(34*3, 0, 35, 35)], 1],
+    ObjectStates.FALLING : [[pygame.Rect(34*5, 0, 35, 35)], 1],
+    ObjectStates.JUMPING : [[pygame.Rect(34*4, 0, 35, 35)], 1],
     ObjectStates.CROUCH_IDLE : [[pygame.Rect(0, 4*35, 35, 35)], 8],
-    ObjectStates.CROUCH_WALK : [[pygame.Rect(34*i, 4*35, 35, 35) for i in range(1,6)], 8],
-    ObjectStates.DASHING : [[pygame.Rect(34*6, 1*35, 35, 35)], 8]
+    ObjectStates.CROUCH_WALK : [[pygame.Rect(34*i, 4*35, 35, 35) for i in range(5)], 8],
+    ObjectStates.DASHING : [[pygame.Rect(34*6, 1*35, 35, 35)], 1]
     # ObjectStates.ATTACKING_WALK : [pygame.Rect(34*i, 2*35, 35, 35) for i in range(7)],
     # ObjectStates.ATTACKING : [pygame.Rect(34*i, 3*35, 35, 35) for i in range(7)]
 }
@@ -19,8 +19,10 @@ attack_animation_rects = {}
 
 row = 0
 for instrument in Instruments:
-    attack_animation_rects[instrument] = [[pygame.Rect(34*i, row*35, 35, 35) for i in range(6)], 8]
+    attack_animation_rects[instrument] = [[pygame.Rect(34*i, row*35, 35, 35) for i in range(6)], 7]
     row += 1
+
+attack_animation_rects[Instruments.BASS][1] = 9
 
 
 class Animation():
@@ -49,6 +51,8 @@ class Animation():
         self.instruments = instruments
         self.owned_anims = {}
         self.assets = assets
+
+        self.current_anim = None
 
         self.load_frames(anims_needed, instruments)
 
@@ -96,8 +100,10 @@ class Animation():
             state = str(instrument)
         elif state == ObjectStates.ATTACKING_WALK:
             state = str(instrument) + " walk"
-        if state in self.owned_anims:
 
+        
+        if state in self.owned_anims:
+            self.current_anim = state
             current_frames = self.owned_anims[state]
 
             if reset:
@@ -155,3 +161,7 @@ class Animation():
                 return self.extra_anim[0]
         
         return self.full_animation[self.animation_frame]
+    
+    def update_frame_rate(self, adjust):
+        self.owned_anims[self.current_anim][1] += adjust
+        print(f'{self.current_anim} set to {self.owned_anims[self.current_anim][1]}')

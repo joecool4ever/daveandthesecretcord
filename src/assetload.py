@@ -12,10 +12,13 @@ class AssetLoad():
             "dave": pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, "sprites\\dave\\DAVE_SPRITE.png")).convert_alpha(),
             "dave_attack": pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, "sprites\\dave\\DAVE_MUSIC.png")).convert_alpha(),
             "dave_attack_walk" : pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, "sprites\\dave\\DAVE_MUSIC_WALK.png")).convert_alpha(),
+            "dave_attack_jump" : pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, "sprites\\dave\\DAVE_MUSIC_JUMP.png")).convert_alpha(),
             "benson": pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, "sprites\\benson\\BENSON_GOOD.png")).convert_alpha(),
             "benson_cor": pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, "sprites\\benson\\BENSON_BAD.png")).convert_alpha(),
             "bree": pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, "sprites\\bree\\BREE_GOOD.png")).convert_alpha(),
-            "bree_cor": pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, "sprites\\bree\\BREE_BAD.png")).convert_alpha()
+            "bree_cor": pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, "sprites\\bree\\BREE_BAD.png")).convert_alpha(),
+            "roxxy": pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, "sprites\\roxxy\\ROXXY_GOOD.png")).convert_alpha(),
+            "roxxy_cor": pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, "sprites\\roxxy\\ROXXY_BAD.png")).convert_alpha()
         }
         self.tilemaps = {
             "grass": pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, "grassTiles.png")).convert_alpha()
