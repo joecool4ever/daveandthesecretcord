@@ -19,14 +19,12 @@ class Dave(DynamicObject):
 
 
         # self.dash_animation = Animation(self.assets.load_images(self.name, state = ObjectStates.DASHING, type = "object"), 8)
-        self.can_dash = True
-        self.dashing = False
-        self.crouching = False
+        
 
 
     def attack(self, attacking, dt):
         self.attacking = attacking
-        self.state = self.changeState(movement=(0,0))
+        self.state = ObjectStates.ATTACKING
 
             
 
@@ -38,37 +36,38 @@ class Dave(DynamicObject):
             self.state = ObjectStates.DASHING
     
     def jump(self):
-        self.grounded_timer = 0
-        self.vel[1] = - 200
+        if self.can_jump:
+            self.grounded_timer = 0
+            self.vel[1] = - 200
 
     def crouch(self, crouching):
         self.crouching = crouching
-        self.state = self.changeState(movement=(0,0))
+        self.state = ObjectStates.CROUCH_IDLE
 
 
-    def changeState(self, movement):
-        state = super().changeState(movement)
+    # def changeState(self, movement):
+    #     state = super().changeState(movement)
 
-        if self.dashing:
-            state = ObjectStates.DASHING
-            self.animation_stall = 20
+    #     if self.dashing:
+    #         state = ObjectStates.DASHING
+    #         self.animation_stall = 20
 
-        if self.attacking:
+    #     if self.attacking:
 
-            if self.grounded_timer > 0:
-                if abs(movement[0]) > 0.1:
-                    state = ObjectStates.ATTACKING_WALK
-                else:
-                    state = ObjectStates.ATTACKING
+    #         if self.grounded_timer > 0:
+    #             if abs(movement[0]) > 0.1:
+    #                 state = ObjectStates.ATTACKING_WALK
+    #             else:
+    #                 state = ObjectStates.ATTACKING
 
-            else:
-                if self.vel[1] < 0:
-                    state = ObjectStates.ATTACKING_JUMP
-                else:
-                    state = ObjectStates.ATTACKING_FALL
+    #         else:
+    #             if self.vel[1] < 0:
+    #                 state = ObjectStates.ATTACKING_JUMP
+    #             else:
+    #                 state = ObjectStates.ATTACKING_FALL
         
-            print(state)
-        return state
+    #         print(state)
+    #     return state
     
     def update(self, game, tilemap, dt, movement=(0,0)):
         super().update(game, tilemap, dt, movement)

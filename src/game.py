@@ -115,7 +115,6 @@ class Game:
                 if event.key == pygame.K_LSHIFT:
                     self.dave.dash()
             elif event.type == pygame.KEYUP:
-                
                 if event.key == pygame.K_a:
                     self.movement[0] = False
                 if event.key == pygame.K_d:

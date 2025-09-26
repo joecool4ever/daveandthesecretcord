@@ -7,7 +7,6 @@ from animationsystem import StateMachine
 
 class DynamicObject(pygame.sprite.Sprite):
     G = 400
-    dynamicObjectsInScene = {}
 
     def __init__(self, x, y, name, type, width, height, game, image, health = 100, cor = False):
         super().__init__()
@@ -22,8 +21,13 @@ class DynamicObject(pygame.sprite.Sprite):
         #body hitboxes
         self.mask_rect = self.mask.get_bounding_rects()[0]
 
+        #states
         self.attacking = False
         self.dashing = False
+        self.crouching = False
+
+        self.can_jump = True
+        self.can_dash = True
 
         # position, physics
         self.vel = pygame.Vector2(0,0)
@@ -67,8 +71,6 @@ class DynamicObject(pygame.sprite.Sprite):
 
         self.test_animation = AnimationController(type= "object", rev_loop = True, anims_needed=anims_needed, instruments = instruments, assets = self.game.assets, name =self.name)
 
-        DynamicObject.dynamicObjectsInScene[self.name] = self
-
         self.collisions = []
 
 
@@ -77,36 +79,6 @@ class DynamicObject(pygame.sprite.Sprite):
     def rects_update(self):
         self.mask_rect = self.mask.get_bounding_rects()[0]
         self.mask_rect = self.mask_rect.move(self.rect.topleft)
-
-    def changeState(self, movement):
-        self.animation_stall = max(0, self.animation_stall - 1)
-        if self.animation_stall == 0:
-            state = None
-            if not self.crouching:
-                if self.grounded_timer > 0:
-                    if abs(movement[0]) > 0.1:
-                        state = ObjectStates.RUNNING
-                    else:
-                        state = ObjectStates.IDLE
-                else:
-                    if self.vel[1] < 0:
-                        state = ObjectStates.JUMPING
-                    else:
-                        state = ObjectStates.FALLING
-            else:
-                if self.grounded_timer > 0:
-                    if abs(movement[0]) > 0.1:
-                        state = ObjectStates.CROUCH_WALK
-                    else:
-                        state = ObjectStates.CROUCH_IDLE
-                else:
-                    if self.vel[1] < 0:
-                        state = ObjectStates.JUMPING
-                    else:
-                        state = ObjectStates.FALLING
-            return state
-        else:
-            return self.state
     
     
     def update(self, game, tilemap, dt, movement=(0,0)):
@@ -149,7 +121,8 @@ class DynamicObject(pygame.sprite.Sprite):
                     if not self.crouching:
                         mask_rect_y.top = collide_tile.rect.bottom
                 if self.dy > 0:
-                    mask_rect_y.bottom = collide_tile.rect.top
+                    if not self.crouching:
+                        mask_rect_y.bottom = collide_tile.rect.top
                     self.vel[1] = 0
                     self.col['down'] = True
                 

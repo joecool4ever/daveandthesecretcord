@@ -30,7 +30,7 @@ class StateMachine():
         
             if object.dashing:
                 state = ObjectStates.DASHING
-                object.animation_stall = 20
+                object.animation_stall = 5
 
             if object.attacking:
                 if object.grounded_timer > 0:
