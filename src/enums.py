@@ -11,6 +11,8 @@ class ObjectStates(Enum):
     DASHING = "Dashing"
     ATTACKING = "Attacking"
     ATTACKING_WALK = "Attacking Walk"
+    ATTACKING_JUMP = "Attacking Jump"
+    ATTACKING_FALL = "Attacking Fall"
 
 class Instruments(Enum):
     LYRE = "Lyre"

@@ -2,7 +2,7 @@ import pygame
 from dynamicObject import DynamicObject
 from objectTypes import GameObjectTypes
 from enums import Instruments, ObjectStates
-from animation import Animation
+from animationsystem import AnimationController, Animation
 
 
 
@@ -18,7 +18,7 @@ class Dave(DynamicObject):
         super().__init__(x, y, name = self.name, type = type, width = 35, height = 35, game= game, cor = False, image = self.image)
 
 
-        self.dash_animation = Animation(self.assets.load_images(self.name, state = ObjectStates.DASHING, type = "object"), 8)
+        # self.dash_animation = Animation(self.assets.load_images(self.name, state = ObjectStates.DASHING, type = "object"), 8)
         self.can_dash = True
         self.dashing = False
         self.crouching = False
@@ -54,8 +54,20 @@ class Dave(DynamicObject):
             self.animation_stall = 20
 
         if self.attacking:
-            state = ObjectStates.ATTACKING_WALK if abs(movement[0]) > 0 else ObjectStates.ATTACKING
 
+            if self.grounded_timer > 0:
+                if abs(movement[0]) > 0.1:
+                    state = ObjectStates.ATTACKING_WALK
+                else:
+                    state = ObjectStates.ATTACKING
+
+            else:
+                if self.vel[1] < 0:
+                    state = ObjectStates.ATTACKING_JUMP
+                else:
+                    state = ObjectStates.ATTACKING_FALL
+        
+            print(state)
         return state
     
     def update(self, game, tilemap, dt, movement=(0,0)):

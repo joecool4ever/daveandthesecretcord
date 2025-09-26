@@ -1,6 +1,7 @@
 import pygame
 import random
 from enums import ObjectStates, Instruments
+from .animation import Animation
 
 move_animation_rects = {
     ObjectStates.IDLE : [[pygame.Rect(34*i, 0, 35, 35) for i in range(3)], 13],
@@ -24,19 +25,24 @@ for instrument in Instruments:
 
 attack_animation_rects[Instruments.BASS][1] = 9
 
+attack_jump_animation_rects = {
+    Instruments.MIC : [[pygame.Rect(34*i, 35*2, 35, 35) for i in range(7)], 7],
+    Instruments.LYRE : [[pygame.Rect(34*i, 35*0, 35, 35) for i in range(7)], 7],
+    Instruments.DRUMS : [[pygame.Rect(34*i, 35*4, 35, 35) for i in range(7)], 7],
+}
 
-class Animation():
-    def __init__(self, array_of_frames, frame_speed, name = "", rev_loop = False, extra_anim = None, anims_needed = [], instruments = [], assets = None):
-        self.array_of_frames = array_of_frames
-        self.rev_loop = rev_loop
-        if self.rev_loop:
-            self.full_animation = self.array_of_frames + self.array_of_frames[-1::-1]
-        else:
-            self.full_animation = self.array_of_frames
+attack_fall_animation_rects = {
+    Instruments.MIC : [[pygame.Rect(34*i, 35*3, 35, 35) for i in range(7)], 7],
+    Instruments.LYRE : [[pygame.Rect(34*i, 35*1, 35, 35) for i in range(7)], 7],
+    Instruments.DRUMS : [[pygame.Rect(34*i, 35*5, 35, 35) for i in range(7)], 7],
+}
+
+
+class AnimationController():
+    def __init__(self, type, name = "", rev_loop = False, extra_anim = None, anims_needed = [], instruments = [], assets = None):
         
         #animation rate variables
         self.extra_anim = extra_anim
-        self.frame_speed = frame_speed
         self.frame_counter = 0
 
         #current frame
@@ -50,11 +56,17 @@ class Animation():
         self.anims_needed = anims_needed
         self.instruments = instruments
         self.owned_anims = {}
+        self.new_owned_anims = {}
         self.assets = assets
 
         self.current_anim = None
 
         self.load_frames(anims_needed, instruments)
+        self.newAnimations = []
+
+        for key,anim in self.owned_anims.items():
+            self.newAnimations.append(Animation(key, anim[0], anim[1]))
+
 
         
 
@@ -77,9 +89,9 @@ class Animation():
                 print(f"Adding {anim} to Animations")
 
                 rects = move_animation_rects[anim][0]
-                print(rects)
                 
                 self.owned_anims[anim] = [self.load_subsurf(rects, self.name, subname=subname), move_animation_rects[anim][1]]
+                self.new_owned_anims[anim] = Animation(anim, self.load_subsurf(rects, self.name, subname=subname), move_animation_rects[anim][1])
             else:
                 print(f'Anim name: {anim} not in Keys')
         for instrument in instruments:
@@ -87,7 +99,20 @@ class Animation():
                 rects = attack_animation_rects[instrument][0]
                 print(f'Instrument name: {instrument} added to Animations')
                 self.owned_anims[str(instrument)] = [self.load_subsurf(rects, self.name, subname="_attack"), attack_animation_rects[instrument][1]]
+                self.new_owned_anims[str(instrument)] = Animation(instrument, self.load_subsurf(rects, self.name, subname="_attack"), attack_animation_rects[instrument][1])
+
                 self.owned_anims[str(instrument) + " walk"] = [self.load_subsurf(rects, self.name, subname="_attack_walk"), attack_animation_rects[instrument][1]]
+                self.new_owned_anims[str(instrument) + " walk"] = Animation(instrument, self.load_subsurf(rects, self.name, subname="_attack_walk"), attack_animation_rects[instrument][1])
+
+                
+                if instrument in attack_jump_animation_rects:
+                    rects = attack_jump_animation_rects[instrument][0]
+                    self.owned_anims[str(instrument) + " jump"] = [self.load_subsurf(rects, self.name, subname="_attack_jump"), attack_jump_animation_rects[instrument][1]]
+                    self.new_owned_anims[str(instrument) + " jump"] = Animation(instrument, self.load_subsurf(rects, self.name, subname="_attack_jump"), attack_jump_animation_rects[instrument][1])
+                if instrument in attack_fall_animation_rects:
+                    rects = attack_fall_animation_rects[instrument][0]
+                    self.owned_anims[str(instrument) + " fall"] = [self.load_subsurf(rects, self.name, subname="_attack_jump"), attack_fall_animation_rects[instrument][1]]
+                    self.new_owned_anims[str(instrument) + " fall"] = Animation(instrument, self.load_subsurf(rects, self.name, subname="_attack_jump"), attack_fall_animation_rects[instrument][1])
             else:
                 print(f'Instrument name: {instrument} not in Keys')
             
@@ -100,11 +125,15 @@ class Animation():
             state = str(instrument)
         elif state == ObjectStates.ATTACKING_WALK:
             state = str(instrument) + " walk"
+        elif state == ObjectStates.ATTACKING_JUMP:
+            state = str(instrument) + " jump"
+        elif state == ObjectStates.ATTACKING_FALL:
+            state = str(instrument) + " fall"
 
         
         if state in self.owned_anims:
             self.current_anim = state
-            current_frames = self.owned_anims[state]
+            current_frames = self.new_owned_anims[state]
 
             if reset:
                 self.animation_frame = 0
@@ -120,7 +149,7 @@ class Animation():
             index = 0
             try:
                 index = self.grab_index(dt, state, current_frames)
-                return current_frames[0][index]
+                return current_frames.frames[index]
             except(IndexError):
                 print(f"Erroring on {state} with index: {index}")
                 return pygame.Surface((35,35))
@@ -130,8 +159,8 @@ class Animation():
     
     def grab_index(self, dt, state_or_instrument, current_frames):
 
-        frames = current_frames[0]
-        frame_speed = current_frames[1]
+        frames = current_frames.frames
+        frame_speed = current_frames.frame_speed
 
         if state_or_instrument not in self.animation_frames:
             self.animation_frames[state_or_instrument] = 0

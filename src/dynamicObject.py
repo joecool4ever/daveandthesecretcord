@@ -1,8 +1,9 @@
 import pygame
 from objectTypes import GameObjectTypes
-from animation import Animation
+from animationsystem import AnimationController
 from enums import ObjectStates, Instruments
 from utils import mask_to_surface
+from animationsystem import StateMachine
 
 class DynamicObject(pygame.sprite.Sprite):
     G = 400
@@ -22,6 +23,7 @@ class DynamicObject(pygame.sprite.Sprite):
         self.mask_rect = self.mask.get_bounding_rects()[0]
 
         self.attacking = False
+        self.dashing = False
 
         # position, physics
         self.vel = pygame.Vector2(0,0)
@@ -63,7 +65,7 @@ class DynamicObject(pygame.sprite.Sprite):
         anims_needed = [state for state in ObjectStates]
         instruments = [instrument for instrument in Instruments]
 
-        self.test_animation = Animation(self.assets.load_images(self.name, state = ObjectStates.IDLE, type = "object"), 12, rev_loop = True, anims_needed=anims_needed, instruments = instruments, assets = self.game.assets, name =self.name)
+        self.test_animation = AnimationController(type= "object", rev_loop = True, anims_needed=anims_needed, instruments = instruments, assets = self.game.assets, name =self.name)
 
         DynamicObject.dynamicObjectsInScene[self.name] = self
 
@@ -175,7 +177,8 @@ class DynamicObject(pygame.sprite.Sprite):
         
     def post_update(self, dt):
         prev_state = self.state
-        self.state = self.changeState((self.dx,self.dy))
+        # self.state = self.changeState((self.dx,self.dy))
+        self.state = StateMachine.stateChange(self, self.state, (self.dx,self.dy))
 
         reset = prev_state is not self.state
         self.image = self.test_animation.newAnimate(dt, self.state, self.current_instrument, reset)

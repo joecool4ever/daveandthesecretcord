@@ -1,6 +1,15 @@
-import pygame, os
-import warnings
+import os, warnings
+
+# Hide pygame startup messages
+os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
+os.environ["PYGAME_SDL_NO_LOGGING"] = "1"
+
+# Ignore Python warnings from certain modules
+warnings.filterwarnings("ignore", category=UserWarning, module="pkg_resources")
 warnings.filterwarnings("ignore", category=UserWarning)
+
+import pygame
+
 
 from dynamicObject import DynamicObject, ObjectStates
 from dynamicObjects.dave import Instruments
@@ -10,7 +19,7 @@ from screen import Screen
 from assetload import AssetLoad
 from tilesystem import Tilemap
 from spriteGroup import SpriteGroup
-from animation import Animation
+from animationsystem import AnimationController
 
 assets = None
 
