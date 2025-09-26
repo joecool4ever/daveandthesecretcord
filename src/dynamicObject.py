@@ -118,11 +118,9 @@ class DynamicObject(pygame.sprite.Sprite):
                 if self.dy < 0:
                     self.vel[1] = 0
                     self.col['up'] = True
-                    if not self.crouching:
-                        mask_rect_y.top = collide_tile.rect.bottom
+                    mask_rect_y.top = collide_tile.rect.bottom
                 if self.dy > 0:
-                    if not self.crouching:
-                        mask_rect_y.bottom = collide_tile.rect.top
+                    mask_rect_y.bottom = collide_tile.rect.top
                     self.vel[1] = 0
                     self.col['down'] = True
                 

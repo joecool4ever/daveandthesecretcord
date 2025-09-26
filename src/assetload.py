@@ -23,7 +23,7 @@ class AssetLoad():
         self.tilemaps = {
             "grass": pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, "grassTiles.png")).convert_alpha()
         }
-        self.dave_sprite_sections = []
+
 
 
     def bree_flight(self, name):
@@ -45,46 +45,6 @@ class AssetLoad():
                 tile_array.append(sheet.subsurface(pygame.Rect(i,j,32,32)))
 
         return tile_array
-    
-    def frame_cutter(self, name, state, instrument = None, isWalking = False):
-        match(state):
-            case ObjectStates.IDLE:
-                return [self.sprite_sheets[name].subsurface(pygame.Rect(34*i, 0, 35, 35)) for i in range(3)]
-            case ObjectStates.IDLE_BLINK:
-                return [self.sprite_sheets[name].subsurface(pygame.Rect(34*3, 0, 35, 35))]
-            case ObjectStates.RUNNING:
-                if name == "bree_cor":
-                    return [self.sprite_sheets[name].subsurface(pygame.Rect(34*i, 70, 35, 35)) for i in range(7)]
-                return [self.sprite_sheets[name].subsurface(pygame.Rect(34*i, 35, 35, 35)) for i in range(6)]
-            case ObjectStates.FALLING:
-                if "bree" in name:
-                    return self.bree_flight(name)
-                return [self.sprite_sheets[name].subsurface(pygame.Rect(34*5, 0, 35, 35))]
-            case ObjectStates.JUMPING:
-                if "bree" in name:
-                    return self.bree_flight(name)
-                return [self.sprite_sheets[name].subsurface(pygame.Rect(34*4, 0, 35, 35))]
-            case ObjectStates.CROUCH_IDLE:
-                return [self.sprite_sheets[name].subsurface(pygame.Rect(0, 4*35, 35, 35))]
-            case ObjectStates.CROUCH_WALK:
-                return [self.sprite_sheets[name].subsurface(pygame.Rect(34*i, 4*35, 35, 35)) for i in range(1,6)]
-            case ObjectStates.DASHING:
-                return [self.sprite_sheets[name].subsurface(pygame.Rect(34*6, 1*35, 35, 35))]
-            
-
-            case ObjectStates.ATTACKING:
-                key = name + "_attack"
-                if isWalking:
-                    key = key + "_walk"
-                match(instrument):
-                    case Instruments.MIC:
-                        return [self.sprite_sheets[key].subsurface(pygame.Rect(34*i, 1*35, 35, 35)) for i in range(7)]
-                    case Instruments.LYRE:
-                        return [self.sprite_sheets[key].subsurface(pygame.Rect(34*i, 0*35, 35, 35)) for i in range(7)]
-                    case Instruments.BASS:
-                        return [self.sprite_sheets[key].subsurface(pygame.Rect(34*i, 3*35, 35, 35)) for i in range(7)]
-                    case Instruments.DRUMS:
-                        return [self.sprite_sheets[key].subsurface(pygame.Rect(34*i, 2*35, 35, 35)) for i in range(7)]
     
     def load_image(self, path):
         img = pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, path)).convert_alpha()
