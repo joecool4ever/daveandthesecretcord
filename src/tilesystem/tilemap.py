@@ -1,5 +1,4 @@
 import pygame
-from utils import mask_to_surface
 from .tile import Tile
 
 PHYSIC_TYPES = {'grass', 'stone'}
@@ -13,7 +12,7 @@ class Tilemap:
         self.grid_width = 30
         self.grid_height = 16
 
-        for i in range(self.grid_width):
+        for i in range(-self.grid_width * 2, self.grid_width * 2):
             tile = Tile(self.game, "grass", 0, (i, self.grid_height))
             self.tilemap[str(i) + ";" + str(self.grid_height)] = tile
             self.game.all_sprites.add(tile)
