@@ -18,13 +18,13 @@ class Screen:
         self.camera = pygame.math.Vector2(0,0)
 
 
-    def blit(self, surface, pos_or_rect):
+    def blit(self, surface, pos_or_rect, parallax_offset=1):
         if isinstance(pos_or_rect, pygame.Rect):
             draw_rect = pos_or_rect.copy()
-            draw_rect.topleft = (round(draw_rect.x - self.camera.x), round(draw_rect.y - self.camera.y))
+            draw_rect.topleft = (round(draw_rect.x - self.camera.x * parallax_offset), round(draw_rect.y - self.camera.y))
             self.game_surface.blit(surface, draw_rect)
         else:
-            draw_pos = (round(pos_or_rect[0] - self.camera.x), round(pos_or_rect[1] - self.camera.y))
+            draw_pos = (round(pos_or_rect[0] - self.camera.x * parallax_offset), round(pos_or_rect[1] - self.camera.y))
             self.game_surface.blit(surface, draw_pos)
 
     

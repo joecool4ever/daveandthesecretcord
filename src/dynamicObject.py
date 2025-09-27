@@ -2,7 +2,6 @@ import pygame
 from objectTypes import GameObjectTypes
 from animationsystem import AnimationController
 from enums import ObjectStates, Instruments
-from utils import mask_to_surface
 from animationsystem import StateMachine
 
 class DynamicObject(pygame.sprite.Sprite):
