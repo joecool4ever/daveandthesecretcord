@@ -1,7 +1,10 @@
 import pygame
 from .tile import Tile
+import random
 
 PHYSIC_TYPES = {'grass', 'stone'}
+
+
 
 class Tilemap:
     def __init__(self, game, tile_size=16):
@@ -12,16 +15,30 @@ class Tilemap:
         self.grid_width = 30
         self.grid_height = 16
 
-        for i in range(-self.grid_width * 2, self.grid_width * 2):
-            tile = Tile(self.game, "grass", 0, (i, self.grid_height))
-            self.tilemap[str(i) + ";" + str(self.grid_height)] = tile
+        tile = Tile(self.game, "left", 0, (0, self.grid_height))
+        self.game.all_sprites.add(tile)
+        self.game.tiles.add(tile)
+        self.tilemap["0;" + str(self.grid_height)] = tile
+
+        for i in range(1, self.grid_width * 2):
+            # tile = Tile(self.game, "grass", 0, (i, self.grid_height))
+            # self.tilemap[str(i) + ";" + str(self.grid_height)] = tile
+            variant = random.randint(0,1)
+            tile = Tile(self.game, "middle", variant, (i, self.grid_height))
             self.game.all_sprites.add(tile)
             self.game.tiles.add(tile)
+            self.tilemap[str(i) + ";" + str(self.grid_height)] = tile
+            
 
-            tile2 = Tile(self.game, "grass", 1, (5 + i, self.grid_height - 2), special="True")
-            self.tilemap[str(5 + i) + ";" + str(self.grid_height - 2)] = tile2
-            self.game.all_sprites.add(tile2)
-            self.game.tiles.add(tile2)
+            # tile2 = Tile(self.game, "grass", 1, (5 + i, self.grid_height - 2), special="True")
+            # self.tilemap[str(5 + i) + ";" + str(self.grid_height - 2)] = tile2
+            # self.game.all_sprites.add(tile2)
+            # self.game.tiles.add(tile2)
+        
+        tile = Tile(self.game, "right", 0, (self.grid_width*2, self.grid_height))
+        self.game.all_sprites.add(tile)
+        self.game.tiles.add(tile)
+        self.tilemap[str(self.grid_width) + ";" + str(self.grid_height)] = tile
 
     def tiles_around(self, rect):
         tiles = []

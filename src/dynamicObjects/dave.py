@@ -13,8 +13,8 @@ class Dave(DynamicObject):
         self.name = "dave"
         self.type = GameObjectTypes.DAVE
         self.current_instrument = current_instrument
-        self.image = pygame.image.load("assets/sprites/dave/DAVE_SPRITE.png")
-        self.image = self.image.subsurface(pygame.Rect(34, 0, 35, 35))
+        self.image = pygame.Surface((35,35))
+        # self.image = self.image.subsurface(pygame.Rect(34, 0, 35, 35))
         super().__init__(x, y, name = self.name, type = type, width = 35, height = 35, game= game, cor = False, image = self.image)
 
 

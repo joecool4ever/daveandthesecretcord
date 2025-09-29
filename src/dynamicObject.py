@@ -68,7 +68,7 @@ class DynamicObject(pygame.sprite.Sprite):
         anims_needed = [state for state in ObjectStates]
         instruments = [instrument for instrument in Instruments]
 
-        self.test_animation = AnimationController(type= "object", rev_loop = True, anims_needed=anims_needed, instruments = instruments, assets = self.game.assets, name =self.name)
+        self.animationController = AnimationController(type= "object", rev_loop = True, anims_needed=anims_needed, instruments = instruments, assets = self.game.assets, name =self.name)
 
         self.collisions = []
 
@@ -151,7 +151,7 @@ class DynamicObject(pygame.sprite.Sprite):
         self.state = StateMachine.stateChange(self, self.state, (self.dx,self.dy))
 
         reset = prev_state is not self.state
-        self.image = self.test_animation.newAnimate(dt, self.state, self.current_instrument, reset)
+        self.image = self.animationController.animate(dt, self.state, self.current_instrument, reset)
 
         self.mask = pygame.mask.from_surface(self.image)
         

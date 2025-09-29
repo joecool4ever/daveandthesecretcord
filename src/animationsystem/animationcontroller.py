@@ -37,6 +37,10 @@ attack_fall_animation_rects = {
     Instruments.DRUMS : [[pygame.Rect(34*i, 35*5, 35, 35) for i in range(7)], 7],
 }
 
+item_rects = {
+    "health" : [[pygame.Rect(i * 50, 0, 50, 50) for i in range(4)], 8],
+    "note" : [[pygame.Rect(0, i, 25, 50) for i in range(50, 450, 50)], 9]
+}
 
 class AnimationController():
     def __init__(self, type, name = "", rev_loop = False, extra_anim = None, anims_needed = [], instruments = [], assets = None):
@@ -56,16 +60,11 @@ class AnimationController():
         self.anims_needed = anims_needed
         self.instruments = instruments
         self.owned_anims = {}
-        self.new_owned_anims = {}
         self.assets = assets
 
         self.current_anim = None
 
-        self.load_frames(anims_needed, instruments)
-        self.newAnimations = []
-
-        for key,anim in self.owned_anims.items():
-            self.newAnimations.append(Animation(key, anim[0], anim[1]))
+        self.load_frames(type, name, anims_needed, instruments)
 
 
     def load_subsurf(self, list_of_rects, name, subname=""):
@@ -80,37 +79,40 @@ class AnimationController():
             
         return subsurfs
     
-    def load_frames(self, anims_needed, instruments = []):
+    def load_frames(self, type, name, anims_needed, instruments = []):
         subname = ""
-        for anim in anims_needed:
-            if anim in move_animation_rects:
-                print(f"Adding {anim} to Animations")
+        if type == "object":
+            for anim in anims_needed:
+                if anim in move_animation_rects:
+                    print(f"Adding {anim} to Animations")
 
-                rects = move_animation_rects[anim][0]
-                self.new_owned_anims[anim] = Animation(anim, self.load_subsurf(rects, self.name, subname=subname), move_animation_rects[anim][1])
-            else:
-                print(f'Anim name: {anim} not in Keys')
-        for instrument in instruments:
-            if instrument in attack_animation_rects:
-                rects = attack_animation_rects[instrument][0]
-                print(f'Instrument name: {instrument} added to Animations')
-                self.new_owned_anims[str(instrument)] = Animation(instrument, self.load_subsurf(rects, self.name, subname="_attack"), attack_animation_rects[instrument][1])
-                self.new_owned_anims[str(instrument) + " walk"] = Animation(instrument, self.load_subsurf(rects, self.name, subname="_attack_walk"), attack_animation_rects[instrument][1])
+                    rects = move_animation_rects[anim][0]
+                    self.owned_anims[anim] = Animation(anim, self.load_subsurf(rects, self.name, subname=subname), move_animation_rects[anim][1])
+                else:
+                    print(f'Anim name: {anim} not in Keys')
+            for instrument in instruments:
+                if instrument in attack_animation_rects:
+                    rects = attack_animation_rects[instrument][0]
+                    print(f'Instrument name: {instrument} added to Animations')
+                    self.owned_anims[str(instrument)] = Animation(instrument, self.load_subsurf(rects, self.name, subname="_attack"), attack_animation_rects[instrument][1])
+                    self.owned_anims[str(instrument) + " walk"] = Animation(instrument, self.load_subsurf(rects, self.name, subname="_attack_walk"), attack_animation_rects[instrument][1])
 
-                
-                if instrument in attack_jump_animation_rects:
-                    rects = attack_jump_animation_rects[instrument][0]
-                    self.new_owned_anims[str(instrument) + " jump"] = Animation(instrument, self.load_subsurf(rects, self.name, subname="_attack_jump"), attack_jump_animation_rects[instrument][1])
-                if instrument in attack_fall_animation_rects:
-                    rects = attack_fall_animation_rects[instrument][0]
-                    self.new_owned_anims[str(instrument) + " fall"] = Animation(instrument, self.load_subsurf(rects, self.name, subname="_attack_jump"), attack_fall_animation_rects[instrument][1])
-            else:
-                print(f'Instrument name: {instrument} not in Keys')
+                    
+                    if instrument in attack_jump_animation_rects:
+                        rects = attack_jump_animation_rects[instrument][0]
+                        self.owned_anims[str(instrument) + " jump"] = Animation(instrument, self.load_subsurf(rects, self.name, subname="_attack_jump"), attack_jump_animation_rects[instrument][1])
+                    if instrument in attack_fall_animation_rects:
+                        rects = attack_fall_animation_rects[instrument][0]
+                        self.owned_anims[str(instrument) + " fall"] = Animation(instrument, self.load_subsurf(rects, self.name, subname="_attack_jump"), attack_fall_animation_rects[instrument][1])
+                else:
+                    print(f'Instrument name: {instrument} not in Keys')
+        else:
+            self.owned_anims[name] = Animation(name, self.load_subsurf(item_rects[name][0], "items", subname = subname), item_rects[name][1])
+
             
 
             
-
-    def newAnimate(self, dt, state, instrument = None, reset = False):
+    def animate(self, dt, state = "health", instrument = None, reset = False):
         
         if state == ObjectStates.ATTACKING:
             state = str(instrument)
@@ -120,11 +122,9 @@ class AnimationController():
             state = str(instrument) + " jump"
         elif state == ObjectStates.ATTACKING_FALL:
             state = str(instrument) + " fall"
-
-        
-        if state in self.new_owned_anims:
+        if state in self.owned_anims:
             self.current_anim = state
-            current_frames = self.new_owned_anims[state]
+            current_frames = self.owned_anims[state]
 
             if reset:
                 self.animation_frame = 0
@@ -145,7 +145,7 @@ class AnimationController():
                 print(f"Erroring on {state} with index: {index}")
                 return pygame.Surface((35,35))
         else:
-            print(f"{state} not a animation applied to DynamicObject")
+            print(f"{state} not a animation applied to {self.name}")
             return pygame.Surface((35,35))
     
     def grab_index(self, dt, state_or_instrument, current_frames):
@@ -162,25 +162,6 @@ class AnimationController():
             self.animation_frames[state_or_instrument] = (self.animation_frames[state_or_instrument] + 1) % len(frames)
             self.frame_counter -= frame_speed / 60  
         return self.animation_frames[state_or_instrument]
-
-    def animate(self, dt): 
-
-        if self.blink_timer > 0 and self.extra_anim:
-            self.blink_timer -= dt
-            return self.extra_anim[0]
-
-        self.frame_counter += dt
-        if self.frame_counter >= self.frame_speed / 60:
-            self.extra_anim_placeholder = None
-            self.animation_frame = (self.animation_frame + 1) % len(self.full_animation)
-            self.frame_counter -= self.frame_speed / 60
-
-            
-            if random.random() < 0.1 and self.extra_anim:
-                self.blink_timer = .15
-                return self.extra_anim[0]
-        
-        return self.full_animation[self.animation_frame]
     
     def update_frame_rate(self, adjust):
         self.owned_anims[self.current_anim][1] += adjust

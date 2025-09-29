@@ -21,6 +21,7 @@ from tilesystem import Tilemap
 from spriteGroup import SpriteGroup
 from animationsystem import AnimationController
 from background import Background
+from item import Item
 
 assets = None
 
@@ -44,15 +45,22 @@ class Game:
 
         #sprites
         self.dave = Dave(self, current_instrument=Instruments.MIC)
+        self.health = Item(50, 50, "health", self.assets, (self.screen.virtual_width//2 + 100, self.screen.virtual_height//2))
+        self.note = Item(25, 50, "note", self.assets, (self.screen.virtual_width//2 + 150, self.screen.virtual_height//2))
 
         #spriteGroups
         self.all_sprites = SpriteGroup()
         self.camera_group = SpriteGroup()
         self.tiles = SpriteGroup()
         self.character_sprites = SpriteGroup()
+        self.items = SpriteGroup()
 
         self.all_sprites.add(self.dave)
         self.character_sprites.add(self.dave)
+        self.all_sprites.add(self.health)
+        self.all_sprites.add(self.note)
+        self.items.add(self.note)
+        self.items.add(self.health)
         
         #focus on Dave
         self.screen.camera.x = self.dave.rect.centerx - self.screen.virtual_width // 2
@@ -132,7 +140,7 @@ class Game:
                     self.dave.crouch(self.crouch_pressed)
                     
     def applyPhysics(self,dt):
-        
+        self.items.update(dt)
         self.character_sprites.update(self,self.tilemap, dt, (self.movement[1] - self.movement[0], self.crouch_pressed))
         self.character_sprites.post_update(dt)
         
@@ -152,6 +160,8 @@ class Game:
     def renderScene(self, dt):
         self.screen.game_surface.fill((226, 255, 252)) 
         self.background.backRender(self.screen)
+        for sprite in self.items.sprites():
+            self.screen.blit(sprite.image, sprite.rect.topleft)
         for sprite in self.tiles.sprites():
             self.screen.blit(sprite.image, sprite.rect.topleft)
         self.screen.blit(self.dave.image, self.dave.rect)
