@@ -1,5 +1,6 @@
 import pygame
 from .tile import Tile
+import random
 
 PHYSIC_TYPES = {'grass', 'stone'}
 
@@ -12,30 +13,45 @@ class Tilemap:
         self.grid_width = 30
         self.grid_height = 16
 
-        tile = Tile(self.game, "left", 0, (0, self.grid_height))
-        self.game.all_sprites.add(tile)
-        self.game.tiles.add(tile)
-        self.tilemap["0;" + str(self.grid_height)] = tile
+        
 
-        for i in range(1, self.grid_width * 2):
-            # tile = Tile(self.game, "grass", 0, (i, self.grid_height))
-            # self.tilemap[str(i) + ";" + str(self.grid_height)] = tile
-            variant = random.randint(0,1)
-            tile = Tile(self.game, "middle", variant, (i, self.grid_height))
-            self.game.all_sprites.add(tile)
-            self.game.tiles.add(tile)
-            self.tilemap[str(i) + ";" + str(self.grid_height)] = tile
+        for i in range(self.grid_width * 2):
+            height = self.grid_height
+            if i == 0:
+                tile = Tile(self.game, "left_top_corner", 0, (0, height), self.game.all_sprites, self.game.tiles)
+                self.tilemap["0;" + str(height)] = tile
+
+                tile = Tile(self.game, "left_middle", 0, (0, height + 1), self.game.all_sprites, self.game.tiles)
+                self.tilemap["0;"+ str(height + 1)] = tile
+
+                tile = Tile(self.game, "bottom_left", 0, (0, height + 2), self.game.all_sprites, self.game.tiles)
+                self.tilemap["0;"+ str(height + 2)] = tile
+            elif i == self.grid_width * 2 - 1:
+                tile = Tile(self.game, "right_top_corner", 0, (i, height), self.game.all_sprites, self.game.tiles)
+                self.tilemap[str(i) + ";"+ str(height)] = tile
+
+                tile = Tile(self.game, "right_middle", 0, (i, height + 1), self.game.all_sprites, self.game.tiles)
+                self.tilemap[str(i) + ";"+ str(height + 1)] = tile
+
+                tile = Tile(self.game, "bottom_right", 0, (i, height + 2), self.game.all_sprites, self.game.tiles)
+                self.tilemap[str(i) + ";"+ str(height + 2)] = tile
+            else:
+                variant = random.randint(0,1)
+
+                tile = Tile(self.game, "middle_top", variant, (i, height), self.game.all_sprites, self.game.tiles)
+                self.tilemap[str(i) + ";" + str(height)] = tile
+
+                tile = Tile(self.game, "true_middle", variant, (i, height + 1), self.game.all_sprites, self.game.tiles)
+                self.tilemap[str(i) + ";" + str(height + 1)] = tile
+
+                tile = Tile(self.game, "bottom_middle", variant, (i, height + 2), self.game.all_sprites, self.game.tiles)
+                self.tilemap[str(i) + ";" + str(height + 2)] = tile
             
 
-            # tile2 = Tile(self.game, "grass", 1, (5 + i, self.grid_height - 2), special="True")
-            # self.tilemap[str(5 + i) + ";" + str(self.grid_height - 2)] = tile2
-            # self.game.all_sprites.add(tile2)
-            # self.game.tiles.add(tile2)
-        
-        tile = Tile(self.game, "right", 0, (self.grid_width*2, self.grid_height))
-        self.game.all_sprites.add(tile)
-        self.game.tiles.add(tile)
-        self.tilemap[str(self.grid_width) + ";" + str(self.grid_height)] = tile
+        # tile = Tile(self.game, "right", 0, (self.grid_width*2, self.grid_height), self.game.all_sprites, self.game.tiles)
+        # self.game.all_sprites.add(tile)
+        # self.game.tiles.add(tile)
+        # self.tilemap[str(self.grid_width) + ";" + str(self.grid_height)] = tile
 
     def tiles_around(self, rect):
         tiles = []
