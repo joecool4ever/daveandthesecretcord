@@ -17,8 +17,8 @@ platformTiles = {
 
 class Tile(pygame.sprite.Sprite):
     
-    def __init__(self, game, tile_type, variant, grid_pos, tile_size=16, passable = False, special = False):
-        super().__init__()
+    def __init__(self, game, tile_type, variant, grid_pos, *groups, tile_size=16, passable = False, special = False):
+        super().__init__(*groups)
 
         self.game = game
         self.type = tile_type
@@ -30,8 +30,8 @@ class Tile(pygame.sprite.Sprite):
         # tile_images = game.assets.load_images(self.type, folder=f"tiles\\{self.type}\\")
         # self.image = tile_images[self.variant]
         
-        game.assets.delete_iccfile("assets\\newtiles\\Forest_Tileset.png")
-        tile_images = game.assets.load_image("newtiles\\Forest_Tileset.png")
+        # gsame.assets.delete_iccfile("assets\\tiles\\Forest_Tileset.png")
+        tile_images = game.assets.load_image("tiles\\Forest_Tileset.png")
         self.image = tile_images.subsurface(platformTiles[tile_type][variant])
 
         self.type = "grass"

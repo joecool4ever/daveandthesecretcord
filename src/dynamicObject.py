@@ -7,8 +7,8 @@ from animationsystem import StateMachine
 class DynamicObject(pygame.sprite.Sprite):
     G = 400
 
-    def __init__(self, x, y, name, type, width, height, game, image, health = 100, cor = False):
-        super().__init__()
+    def __init__(self, x, y, name, type, width, height, game, image, *groups, health = 100, cor = False, ):
+        super().__init__(*groups)
 
         self.image = image
         self.rect = self.image.get_rect(topleft=(x,y))
@@ -147,16 +147,16 @@ class DynamicObject(pygame.sprite.Sprite):
         
     def post_update(self, dt):
         prev_state = self.state
-        # self.state = self.changeState((self.dx,self.dy))
+        
         self.state = StateMachine.stateChange(self, self.state, (self.dx,self.dy))
 
         reset = prev_state is not self.state
         self.image = self.animationController.animate(dt, self.state, self.current_instrument, reset)
-
-        self.mask = pygame.mask.from_surface(self.image)
         
         if self.backwards:
             self.image = pygame.transform.flip(self.image, True, False)
+
+        self.mask = pygame.mask.from_surface(self.image)
         
         
 

@@ -22,6 +22,8 @@ from spriteGroup import SpriteGroup
 from animationsystem import AnimationController
 from background import Background
 from item import Item
+from hud import Hud
+from utils import note_colors
 
 assets = None
 
@@ -31,22 +33,12 @@ class Game:
         pygame.mixer.init()
         pygame.font.init()
 
-        # self.trumpet = pygame.mixer.Sound('assets\\sounds\\trumpet.wav')
-        # self.trumpet = self.trumpet.play(loops=-1)
-        
-        # self.trumpet.pause()
         self.font = pygame.font.SysFont('Arial', 30)
-        
         
         self.screen = Screen()
 
         self.assets = AssetLoad()
         self.background = Background(self.assets)
-
-        #sprites
-        self.dave = Dave(self, current_instrument=Instruments.MIC)
-        self.health = Item(50, 50, "health", self.assets, (self.screen.virtual_width//2 + 100, self.screen.virtual_height//2))
-        self.note = Item(25, 50, "note", self.assets, (self.screen.virtual_width//2 + 150, self.screen.virtual_height//2))
 
         #spriteGroups
         self.all_sprites = SpriteGroup()
@@ -55,12 +47,23 @@ class Game:
         self.character_sprites = SpriteGroup()
         self.items = SpriteGroup()
 
-        self.all_sprites.add(self.dave)
-        self.character_sprites.add(self.dave)
-        self.all_sprites.add(self.health)
-        self.all_sprites.add(self.note)
-        self.items.add(self.note)
-        self.items.add(self.health)
+        #sprites
+        self.dave = Dave(self, self.all_sprites, self.character_sprites, current_instrument=Instruments.MIC)
+        self.health = Item(50, 60, "health", self.assets, (self.screen.virtual_width//2 + 100, self.screen.virtual_height//2), self.all_sprites, self.items)
+
+        for x in range(20):
+            Item(27, 27, "coin", self.assets, ((self.screen.virtual_width//2 + 120) + x * 10, self.screen.virtual_height//2 + 100), self.all_sprites, self.items)
+
+        #hud
+        self.hud = Hud(self.dave, self.screen, self.assets, self.font)
+
+
+        notes_width = self.screen.virtual_width//2 + 150
+        notes_height = self.screen.virtual_height//2
+
+        for color in note_colors[:-1]:
+            note = Item(27, 27, color + "note", self.assets, (notes_width, notes_height), self.items, self.all_sprites)
+            notes_width += 50
         
         #focus on Dave
         self.screen.camera.x = self.dave.rect.centerx - self.screen.virtual_width // 2
@@ -86,6 +89,7 @@ class Game:
     
             self.handle_input(dt)
             self.applyPhysics(dt)
+            self.handle_item_collisions(self.dave, self.items)
             self.renderScene(dt)
             
             pygame.display.flip()
@@ -156,6 +160,14 @@ class Game:
 
         self.background.updateBackgrounds()
 
+    def handle_item_collisions(self, player, items):
+        hits = pygame.sprite.spritecollide(player, items, dokill=True, collided=pygame.sprite.collide_mask)
+
+        for hit in hits:
+            self.dave.collect_item(hit.name)
+
+
+
     
     def renderScene(self, dt):
         self.screen.game_surface.fill((226, 255, 252)) 
@@ -173,12 +185,17 @@ class Game:
         dave_grounded_bool_text = self.font.render(f'{self.dave.col['down']}', True, (0,0,0))
         dave_crouching_text = self.font.render(f'{self.dave.crouching}', True, (0,0,0))
 
+        self.hud.display()
         self.screen.set_to_screen()
-        self.screen.display.blit(dave_pos_text, (100,100))
-        self.screen.display.blit(dave_vel_text, (100,50))
-        self.screen.display.blit(dave_grounded_text, (100,150))
-        self.screen.display.blit(dave_grounded_bool_text, (100,200))
-        self.screen.display.blit(dave_crouching_text, (100,250))
+
+
+        # self.screen.display.blit(dave_pos_text, (100,100))
+        # self.screen.display.blit(dave_vel_text, (100,50))
+        # self.screen.display.blit(dave_grounded_text, (100,150))
+        # self.screen.display.blit(dave_grounded_bool_text, (100,200))
+        # self.screen.display.blit(dave_crouching_text, (100,250))
+
+        
 
 
         

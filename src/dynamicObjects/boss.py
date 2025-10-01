@@ -3,9 +3,9 @@ from animationsystem import AnimationController, Animation
 from objectTypes import GameObjectTypes
 
 class Boss(DynamicObject):
-    def __init__(self, pos, name, type, width, height, game, health = 100, cor = True):
+    def __init__(self, pos, name, type, width, height, game, *groups, health = 100, cor = True):
         self.x, self.y = pos
-        super().__init__(self.x, self.y, name = name, type = type, width=width, height=height, game = game)
+        super().__init__(self.x, self.y, name, *groups, type = type, width=width, height=height, game = game)
 
         self.cor = True
 

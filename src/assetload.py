@@ -21,11 +21,10 @@ class AssetLoad():
             "bree_cor": pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, "sprites\\bree\\BREE_BAD.png")).convert_alpha(),
             "roxxy": pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, "sprites\\roxxy\\ROXXY_GOOD.png")).convert_alpha(),
             "roxxy_cor": pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, "sprites\\roxxy\\ROXXY_BAD.png")).convert_alpha(),
-            "items" : pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, "sprites\\ITEMS.png")).convert_alpha()
+            "items" : pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, "sprites\\items\\ITEMS.png")).convert_alpha(),
+            "items_test" : pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, "sprites\\items\\ITEMS_TEST_LINES.png")).convert_alpha()
         }
-        self.tilemaps = {
-            "grass": pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, "grassTiles.png")).convert_alpha()
-        }
+        
 
 
 

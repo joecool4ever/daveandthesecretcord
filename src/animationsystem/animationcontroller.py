@@ -2,45 +2,7 @@ import pygame
 import random
 from enums import ObjectStates, Instruments
 from .animation import Animation
-
-move_animation_rects = {
-    ObjectStates.IDLE : [[pygame.Rect(34*i, 0, 35, 35) for i in range(3)], 13],
-    ObjectStates.RUNNING : [[pygame.Rect(34*i, 35, 35, 35) for i in range(6)], 7],
-    ObjectStates.IDLE_BLINK : [[pygame.Rect(34*3, 0, 35, 35)], 1],
-    ObjectStates.FALLING : [[pygame.Rect(34*5, 0, 35, 35)], 1],
-    ObjectStates.JUMPING : [[pygame.Rect(34*4, 0, 35, 35)], 1],
-    ObjectStates.CROUCH_IDLE : [[pygame.Rect(0, 4*35, 35, 35)], 8],
-    ObjectStates.CROUCH_WALK : [[pygame.Rect(34*i, 4*35, 35, 35) for i in range(1,6)], 8],
-    ObjectStates.DASHING : [[pygame.Rect(34*6, 1*35, 35, 35)], 1]
-    # ObjectStates.ATTACKING_WALK : [pygame.Rect(34*i, 2*35, 35, 35) for i in range(7)],
-    # ObjectStates.ATTACKING : [pygame.Rect(34*i, 3*35, 35, 35) for i in range(7)]
-}
-
-attack_animation_rects = {}
-
-row = 0
-for instrument in Instruments:
-    attack_animation_rects[instrument] = [[pygame.Rect(34*i, row*35, 35, 35) for i in range(6)], 7]
-    row += 1
-
-attack_animation_rects[Instruments.BASS][1] = 9
-
-attack_jump_animation_rects = {
-    Instruments.MIC : [[pygame.Rect(34*i, 35*2, 35, 35) for i in range(7)], 7],
-    Instruments.LYRE : [[pygame.Rect(34*i, 35*0, 35, 35) for i in range(7)], 7],
-    Instruments.DRUMS : [[pygame.Rect(34*i, 35*4, 35, 35) for i in range(7)], 7],
-}
-
-attack_fall_animation_rects = {
-    Instruments.MIC : [[pygame.Rect(34*i, 35*3, 35, 35) for i in range(7)], 7],
-    Instruments.LYRE : [[pygame.Rect(34*i, 35*1, 35, 35) for i in range(7)], 7],
-    Instruments.DRUMS : [[pygame.Rect(34*i, 35*5, 35, 35) for i in range(7)], 7],
-}
-
-item_rects = {
-    "health" : [[pygame.Rect(i * 50, 0, 50, 50) for i in range(4)], 8],
-    "note" : [[pygame.Rect(0, i, 25, 50) for i in range(50, 450, 50)], 9]
-}
+from rects import *
 
 class AnimationController():
     def __init__(self, type, name = "", rev_loop = False, extra_anim = None, anims_needed = [], instruments = [], assets = None):
@@ -67,13 +29,17 @@ class AnimationController():
         self.load_frames(type, name, anims_needed, instruments)
 
 
-    def load_subsurf(self, list_of_rects, name, subname=""):
+    def load_subsurf(self, list_of_rects, name, subname="", type = ""):
         key = name + subname
         subsurfs = []
         for rect in list_of_rects:
             if key in self.assets.sprite_sheets:
                 sprite_sheet = self.assets.sprite_sheets[key]
-                subsurfs.append(sprite_sheet.subsurface(rect))
+                if type in scales:
+                    
+                    subsurfs.append(pygame.transform.scale(sprite_sheet.subsurface(rect), (rect.width * scales[type], rect.height * scales[type])))
+                else:
+                    subsurfs.append(pygame.transform.scale(sprite_sheet.subsurface(rect), (rect.width * 1, rect.height * 1)))
             else:
                 print(f"{key} not in sprite_sheets")
             
@@ -107,7 +73,10 @@ class AnimationController():
                 else:
                     print(f'Instrument name: {instrument} not in Keys')
         else:
-            self.owned_anims[name] = Animation(name, self.load_subsurf(item_rects[name][0], "items", subname = subname), item_rects[name][1])
+            if "note" in name:
+                self.owned_anims[name] = Animation(name, self.load_subsurf(notes_rects[name.removesuffix("note")], "items_test", subname = subname, type = "note"), 6)
+            else:
+                self.owned_anims[name] = Animation(name, self.load_subsurf(item_rects[name][0], "items_test", subname = subname, type = name), item_rects[name][1])
 
             
 
