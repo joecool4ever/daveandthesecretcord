@@ -66,3 +66,22 @@ instrument_rects = {
     Instruments.DRUMS : pygame.Rect(500, 70, 50, 45),
     Instruments.BASS : pygame.Rect(500, 230, 50, 100)
 }
+
+
+newTiles = {
+    "left_top_corner" : [pygame.Rect(0, 0, 16, 16)],
+    "middle_top" : [pygame.Rect(16, 0, 16, 16), pygame.Rect(32, 0, 16, 16)],
+    "right_top_corner": [pygame.Rect(48, 0, 16, 16)],
+    "left_middle" : [pygame.Rect(0, 16, 16, 16)],
+    "right_middle" : [pygame.Rect(48, 16, 16, 16)],
+    "bottom_left" : [pygame.Rect(0, 32, 16, 16)],
+    "bottom_middle" : [pygame.Rect(16, 32, 16, 16), pygame.Rect(32, 32, 16, 16)],
+    "bottom_right" : [pygame.Rect(48, 32, 16, 16)],
+    "true_middle" : [pygame.Rect(16, 16, 16, 16), pygame.Rect(16, 32, 16, 16)]
+}
+
+platformTiles = {
+    "left" : [pygame.Rect(64, 0, 16, 16)],
+    "middle" : [pygame.Rect(80, 0, 16, 16), pygame.Rect(96, 0, 16, 16)],
+    "right" : [pygame.Rect(112, 0, 16, 16)]
+}

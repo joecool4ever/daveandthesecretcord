@@ -1,17 +1,6 @@
 import pygame
 
-newTiles = {
-    "left_top_corner" : [pygame.Rect(0, 0, 16, 16)],
-    "middle_top" : [pygame.Rect(16, 0, 16, 16), pygame.Rect(16, 0, 16, 16)],
-    "right_top_corner": [pygame.Rect(48, 0, 16, 16)],
-    "left_middle" : [pygame.Rect(0, 16, 16, 16)]
-}
-
-platformTiles = {
-    "left" : [pygame.Rect(64, 0, 16, 16)],
-    "middle" : [pygame.Rect(80, 0, 16, 16), pygame.Rect(96, 0, 16, 16)],
-    "right" : [pygame.Rect(112, 0, 16, 16)]
-}
+from rects import newTiles, platformTiles
 
 
 
@@ -32,7 +21,7 @@ class Tile(pygame.sprite.Sprite):
         
         # gsame.assets.delete_iccfile("assets\\tiles\\Forest_Tileset.png")
         tile_images = game.assets.load_image("tiles\\Forest_Tileset.png")
-        self.image = tile_images.subsurface(platformTiles[tile_type][variant])
+        self.image = tile_images.subsurface(newTiles[tile_type][variant])
 
         self.type = "grass"
 
