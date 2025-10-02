@@ -89,20 +89,21 @@ class DynamicObject(pygame.sprite.Sprite):
         
         self.dx = (movement[0] * self.speed + self.vel[0]) * dt
 
-        local_mask_rect = self.mask.get_bounding_rects()[0]  
+        local_mask_rect = self.mask.get_bounding_rects()[0]
 
         mask_rect_x = local_mask_rect.move(self.rect.topleft)
+
         mask_rect_x.x += self.dx
         
-        for collide_tile in tilemap.physics_tiles(mask_rect_x):
-            if mask_rect_x.colliderect(collide_tile.rect):
-                self.colliding_text = "Collided!"
-                if self.dx > 0:
-                    mask_rect_x.right = collide_tile.rect.left
-                    self.col['right'] = True
-                elif self.dx < 0:
-                    mask_rect_x.left = collide_tile.rect.right
-                    self.col['left'] = True
+        # for collide_tile in tilemap.physics_tiles(mask_rect_x):
+        #     if mask_rect_x.colliderect(collide_tile.rect):
+        #         self.colliding_text = "Collided!"
+        #         if self.dx > 0:
+        #             mask_rect_x.right = collide_tile.rect.left
+        #             self.col['right'] = True
+        #         elif self.dx < 0:
+        #             mask_rect_x.left = collide_tile.rect.right
+        #             self.col['left'] = True
 
         self.rect.x = mask_rect_x.x - local_mask_rect.x
 
@@ -111,26 +112,63 @@ class DynamicObject(pygame.sprite.Sprite):
 
         mask_rect_y = local_mask_rect.move(self.rect.topleft)
         mask_rect_y.y += self.dy
+
+        # Track the deepest collision per axis
+        deepest_top = None   # For hitting ceiling
+        deepest_bottom = None  # For landing
+
+
+
+        for tile in self.game.tiles.sprites():
+            if self.rect.colliderect(tile.rect):
+                hit = pygame.sprite.collide_mask(self, tile)
+                # print(hit)
         
+        # for collide_tile in tilemap.physics_tiles(mask_rect_y):
         for collide_tile in tilemap.physics_tiles(mask_rect_y):
-            if mask_rect_y.colliderect(collide_tile.rect):
-                if self.dy < 0:
+            if pygame.sprite.collide_rect(self, collide_tile):
+                hit = pygame.sprite.collide_mask(self, collide_tile)
+                if (hit):
+                    if self.vel[1] > 0:
+                        if deepest_bottom is None or collide_tile.rect.top < deepest_bottom:
+                            deepest_bottom = collide_tile.rect.top
+                    if self.vel[1] < 0:
+                        if deepest_top is None or collide_tile.rect.bottom > deepest_top:
+                            deepest_top = collide_tile.rect.bottom
                     self.vel[1] = 0
-                    self.col['up'] = True
-                    mask_rect_y.top = collide_tile.rect.bottom
-                if self.dy > 0:
-                    mask_rect_y.bottom = collide_tile.rect.top
-                    self.vel[1] = 0
-                    self.col['down'] = True
+
+        if deepest_bottom is not None:
+            mask_rect_y.bottom = int(deepest_bottom)  # OPTION 3: make integer
+            self.col['down'] = True
+            self.vel[1] = 0
+
+        if deepest_top is not None:
+            mask_rect_y.top = int(deepest_top)  # OPTION 3: make integer
+            self.col['up'] = True
+            self.vel[1] = 0
                 
+        mask_rect_y.y = int(mask_rect_y.y)
+
+
+
+        # if hit[0] > 18:
+        #                 self.rect.x += 35 - hit[0]
+        #             else:
+        #                 self.rect.x -= hit[0]
+                    # if self.dy < 0:
+                    #     self.vel[1] = 0
+                    #     self.col['up'] = True
+                    #     # self.rect.top = collide_tile.rect.bottom
+                    # if self.dy > 0:
+                    #     # self.rect.bottom = collide_tile.rect.top
+                    #     self.vel[1] = 0
+                    #     self.col['down'] = True
+        
+        local_mask_rect = self.mask.get_bounding_rects()[0]
         
         self.rect.y = mask_rect_y.y - local_mask_rect.y
         
         self.mask_rect = self.mask.get_bounding_rects()[0].move(self.rect.topleft)
-
-        # self.vel[0] *= .85
-        # self.vel[0] = 0 if abs(self.vel[0]) > .1 else self.vel[0]
-                
 
         if self.dx < 0:
             self.backwards = True
