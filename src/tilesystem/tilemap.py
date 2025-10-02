@@ -4,6 +4,8 @@ import random
 
 PHYSIC_TYPES = {'grass', 'stone'}
 
+
+
 class Tilemap:
     def __init__(self, game, tile_size=16):
         self.game = game

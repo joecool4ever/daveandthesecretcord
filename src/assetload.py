@@ -1,10 +1,13 @@
 import pygame,os
 from enums import ObjectStates, Instruments
+from PIL import Image
 
 
 class AssetLoad():
     PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     ASSET_DIR = os.path.join(PROJECT_ROOT, "assets")
+
+    
 
     def __init__(self):
         self.sprite_sheets = {
@@ -18,11 +21,10 @@ class AssetLoad():
             "bree_cor": pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, "sprites\\bree\\BREE_BAD.png")).convert_alpha(),
             "roxxy": pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, "sprites\\roxxy\\ROXXY_GOOD.png")).convert_alpha(),
             "roxxy_cor": pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, "sprites\\roxxy\\ROXXY_BAD.png")).convert_alpha(),
-            "items" : pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, "sprites\\ITEMS.png")).convert_alpha()
+            "items" : pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, "sprites\\items\\ITEMS.png")).convert_alpha(),
+            "items_test" : pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, "sprites\\items\\ITEMS_TEST_LINES.png")).convert_alpha()
         }
-        self.tilemaps = {
-            "grass": pygame.image.load(os.path.join(AssetLoad.ASSET_DIR, "grassTiles.png")).convert_alpha()
-        }
+        
 
 
 
@@ -36,6 +38,11 @@ class AssetLoad():
             self.sprite_sheets[name].subsurface(pygame.Rect(34*5 -1, 70, 35, 35)),
             self.sprite_sheets[name].subsurface(pygame.Rect(34*6, 70, 35, 35)),
         ]
+    
+    def delete_iccfile(self,image_path):
+        img = Image.open(image_path)
+        img.info.pop('icc_profile', None)
+        img.save(image_path)
 
 
     def tile_cutter(self, sheet):
