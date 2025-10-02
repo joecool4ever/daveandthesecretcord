@@ -6,8 +6,8 @@ from rects import newTiles, platformTiles
 
 class Tile(pygame.sprite.Sprite):
     
-    def __init__(self, game, tile_type, variant, grid_pos, tile_size=16, passable = False, special = False):
-        super().__init__()
+    def __init__(self, game, tile_type, variant, grid_pos,*groups, tile_size=16, passable = False, special = False):
+        super().__init__(*groups)
 
         self.game = game
         self.type = tile_type
