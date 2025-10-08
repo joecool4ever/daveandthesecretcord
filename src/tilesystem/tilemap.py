@@ -15,6 +15,11 @@ class Tilemap:
         self.grid_width = 30
         self.grid_height = 16
 
+
+        for i in range(self.grid_height):
+            tile = Tile(self.game, "left_top_corner", 0, (1, i), self.game.all_sprites, self.game.tiles)
+            self.tilemap["1;" + str(i)] = tile
+
         
 
         for i in range(self.grid_width * 2):

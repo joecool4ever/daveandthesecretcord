@@ -33,6 +33,8 @@ class Game:
         pygame.mixer.init()
         pygame.font.init()
 
+        self.cotton_eye = pygame.mixer.Sound("assets\\sounds\\cotton-eye.wav")
+
         self.font = pygame.font.SysFont('Arial', 30)
         
         self.screen = Screen()
@@ -83,6 +85,7 @@ class Game:
 
     def run(self):
         while self.running:
+            # dt = self.clock.tick(1)
             dt = self.clock.tick(60) / 1000
             if dt > 0.5:
                 dt = 0

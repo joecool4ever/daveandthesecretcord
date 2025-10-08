@@ -14,6 +14,19 @@ class DynamicObject(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=(x,y))
         self.mask = pygame.mask.from_surface(self.image)
 
+        mask_rect = self.mask.get_bounding_rects()[0]  # relative to mask
+        # distance from left edge of rect to leftmost opaque pixel
+        self.mask_offset_left = mask_rect.left
+        # distance from right edge of rect to rightmost opaque pixel
+        self.mask_offset_right = self.rect.width - mask_rect.right
+        # distance from top of rect to top opaque pixel
+        self.mask_offset_top = mask_rect.top
+        # distance from bottom of rect to bottom opaque pixel
+        self.mask_offset_bottom = self.rect.height - mask_rect.bottom
+
+
+
+
         self.instrument_iter = iter(Instruments)
         self.current_instrument = next(self.instrument_iter)
 
@@ -85,69 +98,134 @@ class DynamicObject(pygame.sprite.Sprite):
         
         self.col = {'up': False, 'down': False, 'left': False, 'right': False,} 
         
+        
+
+        # local_mask_rect = self.mask.get_bounding_rects()[0]
+
+        # mask_rect_x = local_mask_rect.move(self.rect.topleft)
+
+        # mask_rect_x.x += self.dx
+        
+        
+        # for collide_tile in self.game.tiles.sprites():
+        #     left_object_rect = pygame.Rect(self.rect.x, self.rect.y, self.rect.width * .1, self.rect.height * .5)
+        #     right_object_rect = pygame.Rect(self.rect.x, self.rect.y, self.rect.width * .1, self.rect.height * .5)
+        #     right_object_rect.right = self.rect.right
+        #     left_tile_rect = pygame.Rect(collide_tile.rect.x, collide_tile.rect.y, collide_tile.rect.width * .1, collide_tile.rect.height)
+        #     right_tile_rect = pygame.Rect(collide_tile.rect.x, collide_tile.rect.y, collide_tile.rect.width * .1, collide_tile.rect.height)
+        #     right_tile_rect.right = collide_tile.rect.right
+
+        #     if pygame.Rect.colliderect(left_object_rect, right_tile_rect):
+        #         print("Hitting on the left")
+        #     if pygame.Rect.colliderect(right_object_rect, left_tile_rect):
+        #         print("Hitting on the right")
+
+        #     if pygame.sprite.collide_rect(self, collide_tile):
+        #         hit = pygame.sprite.collide_mask(self, collide_tile)
+        #         if (hit):
+        #             if self.vel[0] > 0:
+        #                 self.col['right'] = True
+        #                 mask_rect_x.right = collide_tile.rect.left + 1
+        #             if self.vel[0] < 0:
+        #                 self.col['left'] = True
+        #                 mask_rect_x.left = collide_tile.rect.right + 1
+        #             self.vel[0] = 0
+
+        # self.rect.x = mask_rect_x.x - local_mask_rect.x
+        
+        
+        # mask_rect_y = local_mask_rect.move(self.rect.topleft)
+        # mask_rect_y.y += self.dy
+
+        # for collide_tile in self.game.tiles.sprites():
+        #     top_object_rect = pygame.Rect(self.rect.x, self.rect.y, self.rect.width, self.rect.height * .1)
+        #     bottom_object_rect = pygame.Rect(self.rect.x, self.rect.y, self.rect.width, self.rect.height * .1)
+        #     bottom_object_rect.bottom = self.rect.bottom
+        #     top_tile_rect = pygame.Rect(collide_tile.rect.x, collide_tile.rect.y, collide_tile.rect.width, collide_tile.rect.height * .1)
+        #     bottom_tile_rect = pygame.Rect(collide_tile.rect.x, collide_tile.rect.y, collide_tile.rect.width, collide_tile.rect.height * .1)
+        #     bottom_tile_rect.bottom = collide_tile.rect.bottom
+
+        #     if pygame.Rect.colliderect(bottom_object_rect, top_tile_rect):
+        #         hit = pygame.sprite.collide_mask(self, collide_tile)
+        #         if (hit):
+        #             if self.vel[1] > 0 and not self.col['down']:
+        #                 self.col['down'] = True
+        #                 mask_rect_y.bottom = collide_tile.rect.top + 1
+        #                 self.vel[1] = 0
+        #         # print("Hitting on the bottom")
+        #     if pygame.Rect.colliderect(top_object_rect, bottom_tile_rect):
+        #         hit = pygame.sprite.collide_mask(self, collide_tile)
+        #         if (hit):
+        #             self.col['up'] = True
+        #             mask_rect_y.top = collide_tile.rect.bottom + 1
+        #             self.vel[1] = 0
+
+        #         print("Hitting on the top")
+
+        
+            # if pygame.sprite.collide_rect(self, collide_tile):
+            #     hit = pygame.sprite.collide_mask(self, collide_tile)
+            #     if (hit):
+            #         if self.vel[1] > 0 and not self.col['down']:
+            #             self.col['down'] = True
+            #             mask_rect_y.bottom = collide_tile.rect.top + 1
+            #         if self.vel[1] < 0 and not self.col['up']:
+            #             self.col['up'] = True
+            #             mask_rect_y.top = collide_tile.rect.bottom + 1
+            #         self.vel[1] = 0
+
+                
+        # mask_rect_y.y = int(mask_rect_y.y)
+
         self.dx = 0
         
         self.dx = (movement[0] * self.speed + self.vel[0]) * dt
+        self.rect.x += self.dx
 
-        local_mask_rect = self.mask.get_bounding_rects()[0]
-
-        mask_rect_x = local_mask_rect.move(self.rect.topleft)
-
-        mask_rect_x.x += self.dx
-        
-        # for collide_tile in tilemap.physics_tiles(mask_rect_x):
-        #     if mask_rect_x.colliderect(collide_tile.rect):
-        #         self.colliding_text = "Collided!"
-        #         if self.dx > 0:
-        #             mask_rect_x.right = collide_tile.rect.left
-        #             self.col['right'] = True
-        #         elif self.dx < 0:
-        #             mask_rect_x.left = collide_tile.rect.right
-        #             self.col['left'] = True
-
-        self.rect.x = mask_rect_x.x - local_mask_rect.x
+        for collide_tile in self.game.tiles.sprites():
+            hit = pygame.sprite.collide_mask(self, collide_tile)
+            if hit:
+                print("colliding left/right")
+                if self.dx < 0:
+                    if self.rect.bottom > collide_tile.rect.top and self.rect.top < collide_tile.rect.bottom:
+                        if self.rect.left >= collide_tile.rect.centerx:
+                            self.rect.left = collide_tile.rect.right - 7
+                            self.col['left'] = True
+                            self.dx = 0
+                elif self.dx > 0:
+                    if self.rect.bottom > collide_tile.rect.top and self.rect.top < collide_tile.rect.bottom:
+                        if self.rect.right <= collide_tile.rect.centerx:
+                            print("Right")
+                            self.rect.right = collide_tile.rect.left + 7
+                            self.col['right'] = True
+                            self.dx = 0
 
         self.vel[1] = min(self.vel[1] + DynamicObject.G * dt, 200)
         self.dy = (self.vel[1] + movement[1] * self.speed) * dt
 
-        mask_rect_y = local_mask_rect.move(self.rect.topleft)
-        mask_rect_y.y += self.dy
-
-        # Track the deepest collision per axis
-        deepest_top = None   # For hitting ceiling
-        deepest_bottom = None  # For landing
-
-
-
-        for tile in self.game.tiles.sprites():
-            if self.rect.colliderect(tile.rect):
-                hit = pygame.sprite.collide_mask(self, tile)
-                # print(hit)
         
-        # for collide_tile in tilemap.physics_tiles(mask_rect_y):
-        for collide_tile in tilemap.physics_tiles(mask_rect_y):
-            if pygame.sprite.collide_rect(self, collide_tile):
-                hit = pygame.sprite.collide_mask(self, collide_tile)
-                if (hit):
-                    if self.vel[1] > 0:
-                        if deepest_bottom is None or collide_tile.rect.top < deepest_bottom:
-                            deepest_bottom = collide_tile.rect.top
-                    if self.vel[1] < 0:
-                        if deepest_top is None or collide_tile.rect.bottom > deepest_top:
-                            deepest_top = collide_tile.rect.bottom
-                    self.vel[1] = 0
+        self.rect.y += self.dy
 
-        if deepest_bottom is not None:
-            mask_rect_y.bottom = int(deepest_bottom)  # OPTION 3: make integer
-            self.col['down'] = True
-            self.vel[1] = 0
-
-        if deepest_top is not None:
-            mask_rect_y.top = int(deepest_top)  # OPTION 3: make integer
-            self.col['up'] = True
-            self.vel[1] = 0
+        for collide_tile in self.game.tiles.sprites():
+            hit = pygame.sprite.collide_mask(self, collide_tile)
+            if hit:
+                if self.dy < 0:
+                    if self.rect.right > collide_tile.rect.left and self.rect.left < collide_tile.rect.right:
+                        if self.rect.bottom >= collide_tile.rect.centery:
+                            print("top")
+                            self.rect.top = collide_tile.rect.bottom - self.mask_offset_top
+                            self.col['up'] = True
+                            self.vel[1] = 0
+                            self.dy = 0
+                elif self.dy > 0:
+                    if self.rect.right > collide_tile.rect.left and self.rect.left < collide_tile.rect.right:
+                        if self.rect.bottom <= collide_tile.rect.centery:
+                            self.rect.bottom = collide_tile.rect.top + self.mask_offset_bottom
+                            self.col['down'] = True
+                            self.vel[1] = 0
+                            self.dy = 0
+        
                 
-        mask_rect_y.y = int(mask_rect_y.y)
 
 
 
@@ -166,7 +244,7 @@ class DynamicObject(pygame.sprite.Sprite):
         
         local_mask_rect = self.mask.get_bounding_rects()[0]
         
-        self.rect.y = mask_rect_y.y - local_mask_rect.y
+        # self.rect.y = mask_rect_y.y - local_mask_rect.y
         
         self.mask_rect = self.mask.get_bounding_rects()[0].move(self.rect.topleft)
 
@@ -195,6 +273,18 @@ class DynamicObject(pygame.sprite.Sprite):
             self.image = pygame.transform.flip(self.image, True, False)
 
         self.mask = pygame.mask.from_surface(self.image)
+
+        mask_rect = self.mask.get_bounding_rects()[0]  # relative to mask
+        # distance from left edge of rect to leftmost opaque pixel
+        self.mask_offset_left = mask_rect.left
+        # distance from right edge of rect to rightmost opaque pixel
+        self.mask_offset_right = self.rect.width - mask_rect.right
+        # distance from top of rect to top opaque pixel
+        self.mask_offset_top = mask_rect.top
+        # distance from bottom of rect to bottom opaque pixel
+        self.mask_offset_bottom = self.rect.height - mask_rect.bottom
+
+
         
         
 
